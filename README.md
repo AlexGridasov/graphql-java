@@ -5,6 +5,15 @@ Run project
 mvn jetty:run
 
 
-Query allLinks
+GraphiQL
 -----
-http://localhost:8080/graphql?query={allLinks{url}}
+http://localhost:8080
+
+```graphql
+{
+  allLinks {
+    url
+    description
+  }
+}
+```
