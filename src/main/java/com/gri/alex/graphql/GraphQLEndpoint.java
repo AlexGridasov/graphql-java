@@ -4,6 +4,8 @@ import com.coxautodev.graphql.tools.SchemaParser;
 import javax.servlet.annotation.WebServlet;
 
 import com.gri.alex.repository.LinkRepository;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 import graphql.schema.GraphQLSchema;
 import graphql.servlet.SimpleGraphQLServlet;
 
@@ -17,7 +19,8 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
     private static final LinkRepository linkRepository;
 
     static {
-        linkRepository = new LinkRepository();
+        MongoDatabase mongo = new MongoClient().getDatabase("hackernews");
+        linkRepository = new LinkRepository(mongo.getCollection("links"));
     }
 
     public GraphQLEndpoint() {

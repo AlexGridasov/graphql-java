@@ -1,30 +1,59 @@
 package com.gri.alex.repository;
 
 import com.gri.alex.model.Link;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.mongodb.client.model.Filters.eq;
 
 /**
  * User: Alex
  * Date: 11/16/17
  */
 public class LinkRepository {
+    private final Logger LOG = LoggerFactory.getLogger(LinkRepository.class);
 
-    private final List<Link> links;
+    private final MongoCollection<Document> links;
 
-    public LinkRepository() {
-        links = new ArrayList<>();
-        //add some links to start off with
-        links.add(new Link("http://howtographql.com", "Your favorite GraphQL page"));
-        links.add(new Link("http://graphql.org/learn/", "The official docks"));
+    public LinkRepository(MongoCollection<Document> links) {
+        this.links = links;
+    }
+
+    public Link findById(String id) {
+        Document doc = links.find(eq("_id", new ObjectId(id))).first();
+        Link link = link(doc);
+        LOG.info("findById(): {}", link);
+
+        return link;
     }
 
     public List<Link> getAllLinks() {
-        return links;
+        List<Link> allLinks = new ArrayList<>();
+        for (Document doc : links.find()) {
+            allLinks.add(link(doc));
+        }
+        LOG.info("getAllLinks(): {}", allLinks.size());
+
+        return allLinks;
     }
 
     public void saveLink(Link link) {
-        links.add(link);
+        Document doc = new Document();
+        doc.append("url", link.getUrl());
+        doc.append("description", link.getDescription());
+        links.insertOne(doc);
+    }
+
+    private Link link(Document doc) {
+        return new Link(
+                doc.get("_id").toString(),
+                doc.getString("url"),
+                doc.getString("description"));
     }
 }
