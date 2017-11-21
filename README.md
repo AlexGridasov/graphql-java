@@ -30,3 +30,14 @@ mutation createLink {
   }
 }
 ```
+
+Mutation createUser
+-----
+```graphql
+mutation createUser {
+  createUser(name: "BoJack Horseman", authProvider: {email: "bojack@example.com", password: "secret"}) {
+    id
+    name
+  }
+}
+```

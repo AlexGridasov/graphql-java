@@ -17,7 +17,7 @@ import static com.mongodb.client.model.Filters.eq;
  * Date: 11/16/17
  */
 public class LinkRepository {
-    private final Logger LOG = LoggerFactory.getLogger(LinkRepository.class);
+    private final Logger Logger = LoggerFactory.getLogger(LinkRepository.class);
 
     private final MongoCollection<Document> links;
 
@@ -28,7 +28,7 @@ public class LinkRepository {
     public Link findById(String id) {
         Document doc = links.find(eq("_id", new ObjectId(id))).first();
         Link link = link(doc);
-        LOG.info("findById(): {}", link);
+        Logger.info("findById(): {}", link);
 
         return link;
     }
@@ -38,7 +38,7 @@ public class LinkRepository {
         for (Document doc : links.find()) {
             allLinks.add(link(doc));
         }
-        LOG.info("getAllLinks(): {}", allLinks.size());
+        Logger.info("getAllLinks(): {}", allLinks.size());
 
         return allLinks;
     }
@@ -48,6 +48,7 @@ public class LinkRepository {
         doc.append("url", link.getUrl());
         doc.append("description", link.getDescription());
         links.insertOne(doc);
+        Logger.info("saveLink(): {}", link);
     }
 
     private Link link(Document doc) {
