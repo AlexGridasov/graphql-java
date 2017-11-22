@@ -14,8 +14,12 @@ Query allLinks
 ```graphql
 {
   allLinks {
+    id
     url
     description
+    postedBy {
+      name
+    }
   }
 }
 ```

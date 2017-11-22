@@ -8,6 +8,7 @@ import com.gri.alex.model.User;
 import com.gri.alex.repository.LinkRepository;
 import com.gri.alex.repository.UserRepository;
 import graphql.GraphQLException;
+import graphql.schema.DataFetchingEnvironment;
 
 /**
  * User: Alex
@@ -23,14 +24,17 @@ public class Mutation implements GraphQLRootResolver {
         this.userRepository = userRepository;
     }
 
-    public Link createLink(String url, String description) {
-        Link newLink = new Link(url, description);
+    public Link createLink(String url, String description, DataFetchingEnvironment env) {
+        AuthContext context = env.getContext();
+        Link newLink = new Link(url, description, context.getUser().getId());
         linkRepository.saveLink(newLink);
+
         return newLink;
     }
 
     public User createUser(String name, AuthData auth) {
         User newUser = new User(name, auth.getEmail(), auth.getPassword());
+
         return userRepository.saveUser(newUser);
     }
 
