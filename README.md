@@ -41,3 +41,17 @@ mutation createUser {
   }
 }
 ```
+
+Mutation createUser
+-----
+```graphql
+mutation signIn {
+  signinUser(auth: {email: "bojack@example.com", password: "secret"}) {
+    token
+    user {
+      id
+      name
+    }
+  }
+}
+```
