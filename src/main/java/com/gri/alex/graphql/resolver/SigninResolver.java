@@ -1,4 +1,4 @@
-package com.gri.alex.graphql;
+package com.gri.alex.graphql.resolver;
 
 import com.coxautodev.graphql.tools.GraphQLResolver;
 import com.gri.alex.model.SigninPayload;

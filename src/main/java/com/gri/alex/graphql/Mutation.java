@@ -5,10 +5,16 @@ import com.gri.alex.model.AuthData;
 import com.gri.alex.model.Link;
 import com.gri.alex.model.SigninPayload;
 import com.gri.alex.model.User;
+import com.gri.alex.model.Vote;
 import com.gri.alex.repository.LinkRepository;
 import com.gri.alex.repository.UserRepository;
+import com.gri.alex.repository.VoteRepository;
 import graphql.GraphQLException;
 import graphql.schema.DataFetchingEnvironment;
+
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 /**
  * User: Alex
@@ -18,10 +24,13 @@ public class Mutation implements GraphQLRootResolver {
 
     private final LinkRepository linkRepository;
     private final UserRepository userRepository;
+    private final VoteRepository voteRepository;
 
-    public Mutation(LinkRepository linkRepository, UserRepository userRepository) {
+    public Mutation(LinkRepository linkRepository, UserRepository userRepository,
+                    VoteRepository voteRepository) {
         this.linkRepository = linkRepository;
         this.userRepository = userRepository;
+        this.voteRepository = voteRepository;
     }
 
     public Link createLink(String url, String description, DataFetchingEnvironment env) {
@@ -44,5 +53,10 @@ public class Mutation implements GraphQLRootResolver {
             return new SigninPayload(user.getId(), user);
         }
         throw new GraphQLException("Invalid credentials");
+    }
+
+    public Vote createVote(String linkId, String userId) {
+        ZonedDateTime now = Instant.now().atZone(ZoneOffset.UTC);
+        return voteRepository.saveVote(new Vote(now, userId, linkId));
     }
 }
