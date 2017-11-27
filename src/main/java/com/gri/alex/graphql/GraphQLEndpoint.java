@@ -14,11 +14,15 @@ import com.gri.alex.repository.UserRepository;
 import com.gri.alex.repository.VoteRepository;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
+import graphql.ExceptionWhileDataFetching;
+import graphql.GraphQLError;
 import graphql.schema.GraphQLSchema;
 import graphql.servlet.GraphQLContext;
 import graphql.servlet.SimpleGraphQLServlet;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * User: Alex
@@ -42,6 +46,27 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
         super(buildSchema());
     }
 
+    @Override
+    protected GraphQLContext createContext(Optional<HttpServletRequest> request,
+                                           Optional<HttpServletResponse> response) {
+        User user = request
+                .map(req -> req.getHeader("Authorization"))
+                .filter(id -> !id.isEmpty())
+                .map(id -> id.replace("Bearer ", ""))
+                .map(userRepository::findById)
+                .orElse(null);
+
+        return new AuthContext(user, request, response);
+    }
+
+    @Override
+    protected List<GraphQLError> filterGraphQLErrors(List<GraphQLError> errors) {
+        return errors.stream()
+                .filter(e -> e instanceof ExceptionWhileDataFetching || super.isClientError(e))
+                .map(e -> e instanceof ExceptionWhileDataFetching ? new SanitizedError((ExceptionWhileDataFetching) e) : e)
+                .collect(Collectors.toList());
+    }
+
     private static GraphQLSchema buildSchema() {
         return SchemaParser.newParser()
                 .file("schema.graphqls")
@@ -54,18 +79,5 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
                 .scalars(Scalars.dateTime)
                 .build()
                 .makeExecutableSchema();
-    }
-
-    @Override
-    protected GraphQLContext createContext(Optional<HttpServletRequest> request,
-                                           Optional<HttpServletResponse> response) {
-        User user = request
-                .map(req -> req.getHeader("Authorization"))
-                .filter(id -> !id.isEmpty())
-                .map(id -> id.replace("Bearer ", ""))
-                .map(userRepository::findById)
-                .orElse(null);
-
-        return new AuthContext(user, request, response);
     }
 }
