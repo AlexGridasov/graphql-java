@@ -24,6 +24,17 @@ Query allLinks
 }
 ```
 
+Query allLinks with filter
+-----
+```graphql
+query links {
+  allLinks(filter: {description_contains: "docks", url_contains: "learn"}) {
+    description
+    url
+  }
+}
+```
+
 Mutation createLink
 -----
 ```graphql

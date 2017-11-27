@@ -1,6 +1,6 @@
 
 type Query {
-    allLinks: [Link]
+    allLinks(filter: LinkFilter): [Link]
 }
 
 type Mutation {
@@ -32,6 +32,11 @@ input AuthData {
 type SigninPayload {
     token: String
     user: User
+}
+
+input LinkFilter {
+    description_contains: String
+    url_contains: String
 }
 
 type Vote {
