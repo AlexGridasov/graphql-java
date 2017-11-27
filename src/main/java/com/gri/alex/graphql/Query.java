@@ -19,7 +19,7 @@ public class Query implements GraphQLRootResolver {
         this.linkRepository = linkRepository;
     }
 
-    public List<Link> allLinks(LinkFilter filter) {
-        return linkRepository.getAllLinks(filter);
+    public List<Link> allLinks(LinkFilter filter, Number skip, Number first) {
+        return linkRepository.getAllLinks(filter, skip.intValue(), first.intValue());
     }
 }

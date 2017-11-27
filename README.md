@@ -35,6 +35,24 @@ query links {
 }
 ```
 
+Query allLinks with pagination
+-----
+```graphql
+query links {
+  allLinks(first: 1) {
+    description
+    url
+  }
+}
+
+query links {
+  allLinks(skip: 1, first: 1) {
+    description
+    url
+  }
+}
+```
+
 Mutation createLink
 -----
 ```graphql
