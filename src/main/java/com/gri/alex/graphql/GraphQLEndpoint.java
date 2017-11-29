@@ -19,6 +19,7 @@ import graphql.GraphQLError;
 import graphql.schema.GraphQLSchema;
 import graphql.servlet.GraphQLContext;
 import graphql.servlet.SimpleGraphQLServlet;
+import io.leangen.graphql.GraphQLSchemaGenerator;
 
 import java.util.List;
 import java.util.Optional;
@@ -68,16 +69,12 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
     }
 
     private static GraphQLSchema buildSchema() {
-        return SchemaParser.newParser()
-                .file("schema.graphqls")
-                .resolvers(
-                        new Query(linkRepository),
-                        new Mutation(linkRepository, userRepository, voteRepository),
-                        new SigninResolver(),
-                        new LinkResolver(userRepository),
-                        new VoteResolver(linkRepository, userRepository))
-                .scalars(Scalars.dateTime)
-                .build()
-                .makeExecutableSchema();
+        Query query = new Query(linkRepository);
+        LinkResolver linkResolver = new LinkResolver(userRepository);
+        Mutation mutation = new Mutation(linkRepository, userRepository, voteRepository);
+
+        return new GraphQLSchemaGenerator()
+                .withOperationsFromSingletons(query, linkResolver, mutation)
+                .generate();
     }
 }

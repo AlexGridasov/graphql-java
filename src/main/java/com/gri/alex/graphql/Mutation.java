@@ -11,6 +11,8 @@ import com.gri.alex.repository.UserRepository;
 import com.gri.alex.repository.VoteRepository;
 import graphql.GraphQLException;
 import graphql.schema.DataFetchingEnvironment;
+import io.leangen.graphql.annotations.GraphQLMutation;
+import io.leangen.graphql.annotations.GraphQLRootContext;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -33,8 +35,9 @@ public class Mutation implements GraphQLRootResolver {
         this.voteRepository = voteRepository;
     }
 
-    public Link createLink(String url, String description, DataFetchingEnvironment env) {
-        AuthContext context = env.getContext();
+    @GraphQLMutation
+    public Link createLink(String url, String description,
+                           @GraphQLRootContext AuthContext context) {
         Link newLink = new Link(url, description, context.getUser().getId());
         linkRepository.saveLink(newLink);
 
